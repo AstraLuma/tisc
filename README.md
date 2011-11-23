@@ -9,7 +9,7 @@ Dependencies:
 
 * CouchDB
 * couchdb-python
-* (template library)
+* Genshi
 
 Scripts:
 
