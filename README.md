@@ -16,3 +16,5 @@ Scripts:
 * `init-couchdb` initializes the CouchDB collection, setting up the views.
 * `feed-couchdb` adds an item to the collection
 * `generate-pages` runs all the views, feeds results into the templates, and produces your files.
+
+I'm basing the statistics to implement on <http://elanor.mine.nu/daeron/script.fi.html>.
