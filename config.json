@@ -1,0 +1,10 @@
+{
+    "__options__" : {
+        "root" : ".",
+        "collection": "tisc"
+    },
+    "index.html" : {
+        "page" : "thegeekgroup",
+        "channel": ["freenode", "#thegeekgroup"]
+    }
+}
