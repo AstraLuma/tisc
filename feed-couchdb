@@ -5,3 +5,45 @@
 Feeds a single line into CouchDB.
 """
 
+class Line(object):
+	when = 0
+	channel = ""
+	sender = ""
+	event = ""
+
+class PRIVMSG(Line):
+	event = "PRIVMSG"
+	text = ""
+
+class Action(PRIVMSG):
+	what = ""
+
+class JOIN(Line):
+	event = "JOIN"
+
+class PART(Line):
+	event = "PART"
+	text = ""
+
+class QUIT(Line):
+	event = "QUIT"
+	text = ""
+
+class KICK(Line):
+	event = "KICK"
+	target = ""
+	text = ""
+
+class MODE(Line):
+	event = "MODE"
+	target = ""
+	mask = ""
+
+class TOPIC(Line):
+	event = "TOPIC"
+	text = ""
+
+class NOTICE(Line):
+	event = "NOTICE"
+	text = ""
+

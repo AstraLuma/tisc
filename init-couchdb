@@ -8,36 +8,31 @@ import os, warnings
 from couchdb.client import Server
 from tisc import Tisc
 
-mycouch = Server()
+TISC = Tisc()
+collection = TISC.option('collection')
 
 try:
-	mycouch.delete('tisc')
+	Server().create(collection)
 except:
 	pass
-mycouch.create('tisc')
-TISC = Tisc()
 
-for page in TISC.pages():
-	print "Page:", page
+for view, _ in TISC.views():
+	print "View:", view
 	
-	views = {}
-	for section in TISC.sections(page):
-		sectionpath = os.path.join(TISC.root, page, section)
-		
+	design = TISC.couch().get("_design/%s" % view, {
+		"language": "python",
+		"views" : {},
+	})
+	for section, sectionpath in TISC.sections(view):
 		print "Section:", section
 		mappath = os.path.join(sectionpath, 'map.py')
 		reducepath = os.path.join(sectionpath, 'reduce.py')
 		
-		views[section] = {
+		design['views'][section] = {
 			"map": open(mappath).read(),
 		}
 		if os.path.exists(reducepath):
-			views[section]["reduce"] = open(reducepath).read()
+			design['views'][section]["reduce"] = open(reducepath).read()
 	
-	mycouch['tisc']["_design/%s" % page] = {
-		"_id": "_design/%s" % page,
-		"language": "python",
-		"views" : views,
-	}
-	
+	TISC.couch()["_design/%s" % view] = design
 

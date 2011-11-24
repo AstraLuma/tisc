@@ -1,0 +1,52 @@
+#!/usr/bin/python
+# -*- tab-width: 4; use-tabs: 1; coding: utf-8 -*-
+# vim:tabstop=4:noexpandtab:
+"""
+Downloads the given day from irclog.perlgeek.de and feeds it into couch.
+"""
+import urllib2, sys, re, time, tisc
+from uuid import uuid4
+URL_TEMPLATE = "http://irclog.perlgeek.de/text.pl?channel=thegeekgroup;date=%(year)s-%(month)s-%(day)s"
+LINE_PATTERN = re.compile(r"^(\d{2}):(\d{2}) +(\* )?([^ ]+) +(.*)[\n\r]*$")
+
+TISC = tisc.Tisc()
+
+date = re.match("(?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)", sys.argv[1]).groupdict()
+
+
+TODAYS_ROWS = """
+def map(doc):
+	y,m,d = doc['when'][:3]
+	if doc['event'] in ('action', 'message') and y == %(year)s and m == %(month)s and d == %(day)s:
+		yield doc
+""" % date
+
+for doc in TISC.couch().query(TODAYS_ROWS, language='python'):
+	TISC.couch().delete(doc)
+
+log = urllib2.urlopen(URL_TEMPLATE % date)
+try:
+	for line in log:
+		if line.startswith("Time "): 
+			break
+	for line in log:
+		if line.startswith("</pre>"):
+			break
+		m = LINE_PATTERN.match(line)
+		hr, mn, action, nick, text = m.groups()
+		
+		doc = {
+			'_id': uuid4().hex,
+			'when': map(int, [date['year'], date['month'], date['day'], hr, mn]),
+			'channel': '#thegeekgroup', 
+			'sender': nick,
+			'text': text,
+			}
+		if action:
+			doc['event'] = 'action'
+		else:
+			doc['event'] = 'message'
+		
+		TISC.couch().save(doc)
+finally:
+	log.close()

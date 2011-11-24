@@ -4,7 +4,7 @@
 doc string
 """
 from __future__ import division, absolute_import, with_statement
-import os
+import os, json, couchdb.client
 __all__ = 'Tisc',
 
 class Tisc(object):
@@ -13,23 +13,36 @@ class Tisc(object):
 			self.root = os.path.dirname(__file__)
 		else:
 			self.root = root
+		
+		self.config = json.load(self.file('config.json'))
 	
-	def pages(self):
-		for page in os.listdir(self.root):
-			pagepath = os.path.join(self.root, page)
-			if not os.path.isdir(pagepath) or page[0] in '._':
+	def file(self, fn, *p):
+		return open(os.path.join(self.root, fn), *p)
+	
+	def option(self, key, default=None):
+		return self.config['__options__'].get(key, default)
+	
+	def views(self):
+		for view in os.listdir(self.root):
+			viewpath = os.path.join(self.root, view)
+			if not os.path.isdir(viewpath) or view[0] in '._':
 				continue
 			else:
-				yield page
+				yield view, viewpath
 	
-	def sections(self, page):
-		for section in os.listdir(os.path.join(self.root, page)):
-			sectionpath = os.path.join(self.root, page, section)
+	def sections(self, view):
+		for section in os.listdir(os.path.join(self.root, view)):
+			sectionpath = os.path.join(self.root, view, section)
 			if not os.path.isdir(sectionpath):
 				continue
 			elif not os.path.exists(os.path.join(sectionpath, "map.py")):
 				warnings.warn("No map file for section %s found!" % section)
 				continue
 			else:
-				yield section
-
+				yield section, sectionpath
+	
+	_collection = None
+	def couch(self):
+		if self._collection is None:
+			self._collection = couchdb.client.Server()[self.option('collection')]
+		return self._collection
