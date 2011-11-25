@@ -4,7 +4,7 @@
 """
 Generates the site.
 """
-import json, tisc, os
+import json, tisc, os, shutil
 from genshi.template.loader import TemplateLoader
 from genshi.template.base import INCLUDE
 
@@ -46,8 +46,25 @@ class TemplateHelper(object):
 			else:
 				yield event
 
+def copytree(src, dst):
+	names = os.listdir(src)
+	if not os.path.exists(dst):
+		os.makedirs(dst)
+	errors = []
+	for name in names:
+		srcname = os.path.join(src, name)
+		dstname = os.path.join(dst, name)
+		if os.path.isdir(srcname):
+			copytree(srcname, dstname, symlinks, ignore)
+		else:
+			shutil.copy2(srcname, dstname)
+	shutil.copystat(src, dst)
+
 if not os.path.exists(TISC.option('destination')):
 	os.makedirs(TISC.option('destination'))
+
+if os.path.isdir(TISC.filename('_static')):
+	copytree(TISC.filename('_static'), TISC.option('destination'))
 
 for filename, config in TISC.config.items():
 	if filename.startswith('__') and filename.endswith('__'):
@@ -57,4 +74,5 @@ for filename, config in TISC.config.items():
 	viewloader = TemplateLoader(TISC.genshipaths(view), auto_reload=True, callback=TemplateHelper(TISC, view))
 	viewtemplate = viewloader.load('template.html') #FIXME: Check for template type
 	open(os.path.join(TISC.option('destination'), filename), 'w').write(viewtemplate.generate().render('html'))
+
 

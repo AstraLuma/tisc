@@ -1,11 +1,159 @@
+<?python
+import time
+?>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:py="http://genshi.edgewall.org/"
       xmlns:xi="http://www.w3.org/2001/XInclude">
   <head>
     <title>#thegeekgroup</title>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <style>
+a {
+    text-decoration: none;
+}
+a:link {
+    color: #0b407a;
+}
+a:visited {
+    color: #0b407a;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #0b407a;
+}
+
+a.background {
+    text-decoration: none;
+}
+
+a.background:link {
+    color: #0b407a;
+}
+
+a.background:visited {
+    color: #0b407a;
+}
+
+a.background:hover {
+    text-decoration: underline;
+    color: #0b407a;
+}
+
+body {
+    background-color: #dedeee;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 13px;
+    color: black;
+    text-align: center;
+}
+
+body > *, .section > * {
+    margin: 0 auto;
+}
+
+td {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 13px;
+    color: black;
+    text-align: left;
+}
+
+.male, .male a {
+    color: #0000DD;
+}
+
+.female, .female a {
+    color: #DD3366;
+}
+
+.bot, .bot a {
+    color: #00FFFF;
+}
+
+h1 {
+    font-family: Tahoma, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+h2 {
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    background-color: #666699;
+    width: 99%;
+    border: 1px solid #000000;
+    padding: 3px;
+    margin-top: 20px;
+}
+
+.widetable {
+    width: 100%;
+}
+
+.tdtop {
+    background-color: #C8C8DD;
+}
+
+.hicell {
+    background-color: #BABADD;
+}
+
+.hicell10 {
+    background-color: #BABADD;
+    font-size: 10px;
+}
+
+.rankc {
+    background-color: #CCCCCC;
+    width: 18px;
+    text-align: right;
+}
+
+.hirankc {
+    background-color: #AAAAAA;
+    font-weight: bold;
+    width: 18px;
+    text-align: right;
+}
+
+.rankc10 {
+    background-color: #CCCCCC;
+    font-size: 10px;
+}
+
+.rankc10center {
+    background-color: #CCCCCC;
+    font-size: 10px;
+    text-align: center;
+}
+
+.hirankc10center {
+    background-color: #AAAAAA;
+    font-weight: bold;
+    font-size: 10px;
+    text-align: center;
+}
+
+.small {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 10px;
+}
+
+
+.asmall {
+      font-family: "Arial narrow", Arial, sans-serif;
+      font-size: 10px;
+      color: black;
+      text-align: center;
+}
+    </style>
   </head>
   <body>
+    <h1>Statistics for #thegeekgroup</h1>
+    <p>Statistics generated on ${time.asctime(time.gmtime())} UTC.</p>
+    <h2>Most Active Times</h2>
     <xi:include href="active-hours/section.html" />
   </body>
 </html>

@@ -16,8 +16,11 @@ class Tisc(object):
 		
 		self.config = json.load(self.file('config.json'))
 	
+	def filename(self, *p):
+		return os.path.join(self.root, *p)
+	
 	def file(self, fn, *p):
-		return open(os.path.join(self.root, fn), *p)
+		return open(self.filename(fn), *p)
 	
 	def option(self, key, default=None):
 		return self.config['__options__'].get(key, default)

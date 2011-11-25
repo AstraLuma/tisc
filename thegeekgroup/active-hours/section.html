@@ -1,25 +1,24 @@
+<?python
+from __future__ import division
+
+datadict = {}
+for row in data:
+    datadict[row.key] = row.value
+total = sum(datadict.values())
+scaleddata = [(k, datadict[k]/total) for k in sorted(datadict.keys())]
+?>
 <div xmlns="http://www.w3.org/1999/xhtml"
      xmlns:py="http://genshi.edgewall.org/"
-     lang="en">
-    <script type="text/javascript"><![CDATA[
-      google.load("visualization", "1", {packages:["corechart"]});
-      google.setOnLoadCallback(drawChart);
-      basedata = {}
-      function drawChart() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Hour');
-        data.addColumn('number', 'Messages');
-        data.addRows(24);
-        for (var i = 0; i < 24; i++) {
-            data.setValue(i, 0, String(i));
-            data.setValue(i, 1, basedata[i]);
-        }
-        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-        chart.draw(data, {width: 400, height: 240});
-      }
-    ]]></script>
-    <script py:for="row in data">
-        basedata[${row.key}] = ${row.value};
-    </script>
-    <div id="chart_div"></div>
+     lang="en" class="section" id="active-hours">
+    <table style="text-align: center;">
+        <tr style="font-size: 10px;">
+            <td class="asmall" style="vertical-align: bottom;" py:for="row in scaleddata">
+                ${round(row[1]*100)}%
+                <div style="margin: 0 auto; height: ${row[1]*500}px; width: 15px; background: url('${['blue','green','yellow','red'][row[0]//6]}-v.png');"></div>
+            </td>
+        </tr>
+        <tr>
+            <td class="rankc10center" py:for="row in scaleddata">${row[0]}</td>
+        </tr>
+    </table>
 </div>

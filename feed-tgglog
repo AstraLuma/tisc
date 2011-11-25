@@ -7,7 +7,7 @@ Downloads the given day from irclog.perlgeek.de and feeds it into couch.
 import urllib2, sys, re, time, tisc
 from uuid import uuid4
 URL_TEMPLATE = "http://irclog.perlgeek.de/text.pl?channel=thegeekgroup;date=%(year)s-%(month)s-%(day)s"
-LINE_PATTERN = re.compile(r"^(\d{2}):(\d{2}) +(\* )?([^ ]+) +(.*)[\n\r]*$")
+LINE_PATTERN = re.compile(r"^(\d{2}):(\d{2}) +(\* )?([^ ]+)(?: +(.*))?[\n\r]*$")
 
 TISC = tisc.Tisc()
 
@@ -17,9 +17,9 @@ date = re.match("(?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)", sys.argv[1]).groupd
 TODAYS_ROWS = """
 def map(doc):
 	y,m,d = doc['when'][:3]
-	if doc['event'] in ('action', 'message') and y == %(year)s and m == %(month)s and d == %(day)s:
+	if doc['event'] in ('action', 'message') and y == %(year)i and m == %(month)i and d == %(day)i:
 		yield doc, doc
-""" % date
+""" % dict(zip(date.keys(), map(int, date.values())))
 
 for row in TISC.couch().query(TODAYS_ROWS, language='python', include_docs=True):
 	doc = row.doc
@@ -36,6 +36,8 @@ try:
 		if line.startswith("</pre>"):
 			break
 		m = LINE_PATTERN.match(line)
+		if m is None:
+			sys.exit("Unknown line: %r" % line)
 		hr, mn, action, nick, text = m.groups()
 		
 		doc = {
@@ -43,7 +45,7 @@ try:
 			'when': map(int, [date['year'], date['month'], date['day'], hr, mn]),
 			'channel': '#thegeekgroup', 
 			'sender': nick,
-			'text': text,
+			'text': text or "",
 			}
 		if action:
 			doc['event'] = 'action'

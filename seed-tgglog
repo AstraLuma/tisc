@@ -1,0 +1,13 @@
+#!/usr/bin/python
+# -*- tab-width: 4; use-tabs: 1; coding: utf-8 -*-
+# vim:tabstop=4:noexpandtab:
+"""
+Does an initial seed of data from the online IRC log.
+"""
+from subprocess import check_call
+
+for month in range(4,12):
+	for day in range(1,32):
+		print month, day
+		check_call(['./feed-tgglog', '2011-%02i-%02i' % (month, day)])
+
