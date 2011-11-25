@@ -31,7 +31,7 @@ for month in range(4, 12):
 				
 				doc = {
 					'_id': '%i-%02i-%02i-%05i' % (date['year'], date['month'], date['day'], ln),
-					'when': [date['year'], date['month'], date['day'], hr, mn],
+					'when': [date['year'], date['month'], date['day'], int(hr), int(mn)],
 					'channel': '#thegeekgroup', 
 					'sender': nick,
 					'text': text or "",
