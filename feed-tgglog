@@ -6,54 +6,47 @@ Downloads the given day from irclog.perlgeek.de and feeds it into couch.
 """
 import urllib2, sys, re, time, tisc
 from uuid import uuid4
-URL_TEMPLATE = "http://irclog.perlgeek.de/text.pl?channel=thegeekgroup;date=%(year)s-%(month)s-%(day)s"
+URL_TEMPLATE = "http://irclog.perlgeek.de/text.pl?channel=thegeekgroup;date=%(year)i-%(month)02i-%(day)02i"
 LINE_PATTERN = re.compile(r"^(\d{2}):(\d{2}) +(\* )?([^ ]+)(?: +(.*))?[\n\r]*$")
 
 TISC = tisc.Tisc()
 
-date = re.match("(?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)", sys.argv[1]).groupdict()
+print "Loading logs..."
+for argv in sys.argv[1:]:
+	date = re.match("(?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)", argv).groupdict()
+	date = dict(zip(date.keys(), map(int, date.values())))
 
+	print "\t%(year)i-%(month)02i-%(day)02i..." % date
+	docstofeed = []
 
-TODAYS_ROWS = """
-def map(doc):
-	y,m,d = doc['when'][:3]
-	if doc['event'] in ('action', 'message') and y == %(year)i and m == %(month)i and d == %(day)i:
-		yield doc, doc
-""" % dict(zip(date.keys(), map(int, date.values())))
-
-for row in TISC.couch().query(TODAYS_ROWS, language='python', include_docs=True):
-	doc = row.doc
-	TISC.couch().delete(doc)
-
-docstofeed = []
-
-log = urllib2.urlopen(URL_TEMPLATE % date)
-try:
-	for line in log:
-		if line.startswith("Time "): 
-			break
-	for line in log:
-		if line.startswith("</pre>"):
-			break
-		m = LINE_PATTERN.match(line)
-		if m is None:
-			sys.exit("Unknown line: %r" % line)
-		hr, mn, action, nick, text = m.groups()
+	log = urllib2.urlopen(URL_TEMPLATE % date)
+	try:
+		for line in log:
+			if line.startswith("Time "): 
+				break
+		for ln, line in enumerate(log):
+			if line.startswith("</pre>"):
+				break
+			m = LINE_PATTERN.match(line)
+			if m is None:
+				sys.exit("Unknown line: %r" % line)
+			hr, mn, action, nick, text = m.groups()
 		
-		doc = {
-			'_id': uuid4().hex,
-			'when': map(int, [date['year'], date['month'], date['day'], hr, mn]),
-			'channel': '#thegeekgroup', 
-			'sender': nick,
-			'text': text or "",
-			}
-		if action:
-			doc['event'] = 'action'
-		else:
-			doc['event'] = 'message'
+			doc = {
+				'_id': '%i-%02i-%02i-%05i' % (date['year'], date['month'], date['day'], ln),
+				'when': map(int, [date['year'], date['month'], date['day'], hr, mn]),
+				'channel': '#thegeekgroup', 
+				'sender': nick,
+				'text': text or "",
+				}
+			if action:
+				doc['event'] = 'action'
+			else:
+				doc['event'] = 'message'
 		
-		docstofeed.append(doc)
-finally:
-	log.close()
+			docstofeed.append(doc)
+	finally:
+		log.close()
 
-TISC.couch().update(docstofeed)
+	TISC.couch().update(docstofeed)
+TISC.couch().compact()
