@@ -41,8 +41,20 @@ class Tisc(object):
 			else:
 				yield section, sectionpath
 	
+	def issection(self, view, section):
+		return os.path.isdir(os.path.join(self.root, view, section))
+	
 	_collection = None
 	def couch(self):
 		if self._collection is None:
 			self._collection = couchdb.client.Server()[self.option('collection')]
 		return self._collection
+	
+	def genshipaths(self, view=None, section=None):
+		pl = [os.path.join(self.root, "_include")]
+		if view is not None:
+			pl.append(os.path.join(self.root, view))
+			if section is not None:
+				pl.append(os.path.join(self.root, view, section))
+		pl.reverse()
+		return pl

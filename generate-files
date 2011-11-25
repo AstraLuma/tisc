@@ -4,6 +4,57 @@
 """
 Generates the site.
 """
-import json, tisc
+import json, tisc, os
+from genshi.template.loader import TemplateLoader
+from genshi.template.base import INCLUDE
 
 TISC = tisc.Tisc()
+
+class TemplateHelper(object):
+	"""
+	Class to give section templates their data.
+	"""
+	def __init__(self, tisc, view):
+		self.tisc = tisc
+		self.view = view
+	
+	def __call__(self, tmpl):
+		print "Template:", tmpl
+		tmpl.filters.insert(0, self.filter)
+	
+	def _getdata(self, section):
+		return self.tisc.couch().view('%s/%s' % (self.view, section), group=True)
+	
+	def filter(self, stream, ctxt, **vars):
+		for event in stream:
+			if event[0] is INCLUDE:
+				href, cls, fallback = event[1]
+				if not isinstance(href, basestring):
+					yield event
+				else:
+					if '/' in href:
+						section, fn = href.split('/', 1)
+						if fn == 'section.html' and self.tisc.issection(self.view, section):
+							data = self._getdata(section)
+							ctxt.push({'data': data})
+							yield event
+							ctxt.pop()
+						else:
+							yield event
+					else:
+						yield event
+			else:
+				yield event
+
+if not os.path.exists(TISC.option('destination')):
+	os.makedirs(TISC.option('destination'))
+
+for filename, config in TISC.config.items():
+	if filename.startswith('__') and filename.endswith('__'):
+		continue
+	view = config['view']
+	print "View:", view
+	viewloader = TemplateLoader(TISC.genshipaths(view), callback=TemplateHelper(tisc, view))
+	viewtemplate = viewloader.load('template.html') #FIXME: Check for template type
+	open(os.path.join(TISC.option('destination'), filename), 'w').write(viewtemplate.generate().render('html'))
+

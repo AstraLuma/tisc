@@ -1,6 +1,7 @@
 {
     "__options__" : {
-        "collection": "tisc"
+        "collection": "tisc",
+        "destination": "/var/www/tisc"
     },
     "index.html" : {
         "view" : "thegeekgroup",
