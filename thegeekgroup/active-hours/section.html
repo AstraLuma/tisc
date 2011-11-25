@@ -6,7 +6,7 @@ for row in data:
     datadict[row.key] = row.value
 mx = max(datadict.values())
 total = sum(datadict.values())
-scaleddata = [(k, datadict[k]/mx, datadict[k]/total) for k in sorted(datadict.keys())]
+scaleddata = [(k, datadict[k], datadict[k]/mx, datadict[k]/total) for k in sorted(datadict.keys())]
 ?>
 <div xmlns="http://www.w3.org/1999/xhtml"
      xmlns:py="http://genshi.edgewall.org/"
@@ -14,8 +14,8 @@ scaleddata = [(k, datadict[k]/mx, datadict[k]/total) for k in sorted(datadict.ke
     <table style="text-align: center;">
         <tr style="font-size: 10px;">
             <td class="asmall" style="vertical-align: bottom;" py:for="row in scaleddata">
-                ${round(row[2]*100)}%
-                <div style="margin: 0 auto; height: ${row[1]*100}px; width: 15px; background: url('${['blue','green','yellow','red'][row[0]//6]}-v.png');"></div>
+                ${round(row[3]*100)}%
+                <div style="margin: 0 auto; height: ${row[2]*100}px; width: 15px; background: url('${['blue','green','yellow','red'][row[0]//6]}-v.png');" title="${row[1]}"></div>
             </td>
         </tr>
         <tr>
