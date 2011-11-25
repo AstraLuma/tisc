@@ -54,7 +54,7 @@ for filename, config in TISC.config.items():
 		continue
 	view = config['view']
 	print "View:", view
-	viewloader = TemplateLoader(TISC.genshipaths(view), callback=TemplateHelper(tisc, view))
+	viewloader = TemplateLoader(TISC.genshipaths(view), auto_reload=True, callback=TemplateHelper(TISC, view))
 	viewtemplate = viewloader.load('template.html') #FIXME: Check for template type
 	open(os.path.join(TISC.option('destination'), filename), 'w').write(viewtemplate.generate().render('html'))
 
