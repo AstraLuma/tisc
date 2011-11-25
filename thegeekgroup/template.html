@@ -152,7 +152,7 @@ h2 {
   </head>
   <body>
     <h1>Statistics for #thegeekgroup</h1>
-    <p>Statistics generated on ${time.asctime(time.gmtime())} UTC.</p>
+    <p>Statistics generated on ${time.asctime(time.gmtime())} UTC from ${TISC.couch().info()['doc_count']} lines.</p>
     <h2>Most Active Times</h2>
     <xi:include href="active-hours/section.html" />
   </body>
