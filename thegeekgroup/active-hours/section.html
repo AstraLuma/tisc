@@ -11,15 +11,15 @@ scaleddata = [(k, datadict[k], datadict[k]/mx, datadict[k]/total) for k in sorte
 <div xmlns="http://www.w3.org/1999/xhtml"
      xmlns:py="http://genshi.edgewall.org/"
      lang="en" class="section" id="active-hours">
-    <table style="text-align: center;">
-        <tr style="font-size: 10px;">
-            <td class="asmall" style="vertical-align: bottom;" py:for="row in scaleddata">
-                ${round(row[3]*100)}%
+    <table class="asmall" style="text-align: center; font-size: 10px;">
+        <tr>
+            <td style="vertical-align: bottom;" py:for="row in scaleddata">
+                ${round(row[3]*100, 1)}%
                 <div style="margin: 0 auto; height: ${row[2]*100}px; width: 15px; background: url('${['blue','green','yellow','red'][row[0]//6]}-v.png');" title="${row[1]}"></div>
             </td>
         </tr>
         <tr>
-            <td class="rankc10center" py:for="row in scaleddata">${row[0]}</td>
+            <th py:for="row in scaleddata">${row[0]}</th>
         </tr>
     </table>
 </div>

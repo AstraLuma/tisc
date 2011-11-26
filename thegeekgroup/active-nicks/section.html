@@ -1,0 +1,50 @@
+<?python
+from __future__ import division
+
+sorteddata = sorted((d.value for d in data), key=lambda v: -v['lines'])
+
+def widths(*data):
+    total = sum(data)
+    return [d / total for d in data]
+?>
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:py="http://genshi.edgewall.org/"
+     lang="en" class="section" id="active-hours">
+    <table class="asmall" style="text-align: center; font-size: 10px;">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Nick</th>
+                <th>Lines</th>
+                <th>When?</th>
+                <th>Words</th>
+                <th>Words/line</th>
+                <th>Chars</th>
+                <th>Chars/line</th>
+                <th>Oldest</th>
+                <th>Newest</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr py:for="rn, row in enumerate(sorteddata[:30])">
+                <th>${rn}</th>
+                <td>${row.nick}</td>
+                <td>${row.lines}</td>
+                <td py:with="w=widths(row.blue, row.green, row.yellow, row.red)">
+                    <div style="display: inline-block; height: 15px; width: ${w[0]*100}px; background: url('blue-h.png');" title="${row.blue}">
+                    </div><div style="display: inline-block; height: 15px; width: ${w[1]*100}px; background: url('green-h.png');" title="${row.green}">
+                    </div><div style="display: inline-block; height: 15px; width: ${w[2]*100}px; background: url('yellow-h.png');" title="${row.yellow}">
+                    </div><div style="display: inline-block; height: 15px; width: ${w[3]*100}px; background: url('red-h.png');" title="${row.red}">
+                    </div>
+                </td><!--FIXME-->
+                <td>${row.words}</td>
+                <td>${round(row.words / float(row.lines), 1)}</td>
+                <td>${row.chars}</td>
+                <td>${round(row.chars / float(row.lines), 1)}</td>
+                <td>${"%i-%02i-%02i %i:%02i" % tuple(row.oldest)}</td>
+                <td>${"%i-%02i-%02i %i:%02i" % tuple(row.newest)}</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>${len(sorteddata)-30} more nicks.</p>
+</div>
