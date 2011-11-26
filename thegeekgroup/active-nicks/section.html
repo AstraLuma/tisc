@@ -27,7 +27,7 @@ def widths(*data):
             </tr>
         </thead>
         <tbody>
-            <tr py:for="rn, row in enumerate(sorteddata[:30])">
+            <tr py:for="rn, row in enumerate(sorteddata[:30])" style="vetical-align: top">
                 <th>${rn+1}</th>
                 <td>${row.nick}</td>
                 <td>${row.lines}</td>
@@ -44,9 +44,12 @@ def widths(*data):
                 <td>${round(row.chars / float(row.lines), 1)}</td>
                 <td>${"%i-%02i-%02i %i:%02i" % tuple(row.oldest)}</td>
                 <td>${"%i-%02i-%02i %i:%02i" % tuple(row.newest)}</td>
-                <td>${row.random}</td>
+                <td style="max-width:30em; text-align:left;">${row.random}</td>
             </tr>
         </tbody>
     </table>
-    <p>${len(sorteddata)-30} more nicks.</p>
+    <div py:if="len(sorteddata) > 30">
+        <div py:for="row in sorteddata[30:60]" style="display: inline-block; margin: 0.2em; padding: 0.2em; background: silver;">${row.nick} (${row.lines})</div>
+    </div>
+    <p py:if="len(sorteddata) > 60">${len(sorteddata)-60} more nicks.</p>
 </div>
