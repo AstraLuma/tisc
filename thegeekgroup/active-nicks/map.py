@@ -14,6 +14,7 @@ def m(doc):
 			'chars': len(doc['text']),
 			'oldest': doc['when'],
 			'newest': doc['when'],
+			'random': doc['text'],
 			}
 		color = ['blue', 'green', 'yellow', 'red'][doc['when'][3]//6]
 		data[color] = 1

@@ -13,6 +13,7 @@ def r(keys, values, rereduce):
 		'chars': 0,
 		'oldest': values[0]['oldest'],
 		'newest': values[0]['newest'],
+		'random': __import__('random').choice([v['random'] for v in values]),
 		}
 	for value in values:
 		data['lines'] += value['lines']

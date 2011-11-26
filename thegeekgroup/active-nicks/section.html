@@ -23,11 +23,12 @@ def widths(*data):
                 <th>Chars/line</th>
                 <th>Oldest</th>
                 <th>Newest</th>
+                <th>Random Quote</th>
             </tr>
         </thead>
         <tbody>
             <tr py:for="rn, row in enumerate(sorteddata[:30])">
-                <th>${rn}</th>
+                <th>${rn+1}</th>
                 <td>${row.nick}</td>
                 <td>${row.lines}</td>
                 <td py:with="w=widths(row.blue, row.green, row.yellow, row.red)">
@@ -43,6 +44,7 @@ def widths(*data):
                 <td>${round(row.chars / float(row.lines), 1)}</td>
                 <td>${"%i-%02i-%02i %i:%02i" % tuple(row.oldest)}</td>
                 <td>${"%i-%02i-%02i %i:%02i" % tuple(row.newest)}</td>
+                <td>${row.random}</td>
             </tr>
         </tbody>
     </table>
