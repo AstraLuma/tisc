@@ -2,47 +2,14 @@
 # -*- tab-width: 4; use-tabs: 1; coding: utf-8 -*-
 # vim:tabstop=4:noexpandtab:
 """
-Downloads the given day from irclog.perlgeek.de and feeds it into couch.
+Downloads all the logs from online and feeds them into CouchDB.
 """
-import urllib2, sys, re, time, tisc
-URL_TEMPLATE = "http://irclog.perlgeek.de/text.pl?channel=thegeekgroup;date=%(year)i-%(month)02i-%(day)02i"
-LINE_PATTERN = re.compile(r"^(\d{2}):(\d{2}) +(\* )?([^ ]+)(?: +(.*))?[\n\r]*$")
+import os
 
-TISC = tisc.Tisc()
-
-print "Loading logs..."
+dates = []
 for month in range(4, 12):
 	for day in range(1, 32):
 		date = {'year': 2011, 'month': month, 'day': day}
-		print "\t%(year)i-%(month)02i-%(day)02i..." % date
-		log = urllib2.urlopen(URL_TEMPLATE % date)
-		try:
-			docstofeed = []
-			for line in log:
-				if line.startswith("Time "): 
-					break
-			for ln, line in enumerate(log):
-				if line.startswith("</pre>"):
-					break
-				m = LINE_PATTERN.match(line)
-				if m is None:
-					sys.exit("Unknown line: %r" % line)
-				hr, mn, action, nick, text = m.groups()
-				
-				doc = {
-					'_id': '%i-%02i-%02i-%05i' % (date['year'], date['month'], date['day'], ln),
-					'when': [date['year'], date['month'], date['day'], int(hr), int(mn)],
-					'channel': '#thegeekgroup', 
-					'sender': nick,
-					'text': text or "",
-					}
-				if action:
-					doc['event'] = 'action'
-				else:
-					doc['event'] = 'message'
-				
-				docstofeed.append(doc)
-		finally:
-			log.close()
-		TISC.couch().update(docstofeed)
-TISC.couch().compact()
+		dates.append("%(year)i-%(month)02i-%(day)02i" % date)
+
+os.execl('./feed-tgglog', './feed-tgglog', *dates)
