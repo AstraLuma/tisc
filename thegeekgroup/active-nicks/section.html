@@ -9,11 +9,24 @@ def widths(*data):
 ?>
 <div xmlns="http://www.w3.org/1999/xhtml"
      xmlns:py="http://genshi.edgewall.org/"
-     lang="en" class="section" id="active-hours">
-    <table class="asmall" style="text-align: center; font-size: 10px;">
+     lang="en" class="section" id="active-nicks">
+    <style scoped="">
+    #active-nicks table, #active-nicks table * {
+    	font-size: 12px;
+    	text-align: center;
+    }
+    #active-nicks td, #active-nicks th {
+    	vertical-align: top;
+    }
+    #active-nicks .hbars div {
+    	display: inline-block;
+    	height: 15px;
+    }
+    </style>
+    <table>
         <thead>
             <tr>
-                <th></th>
+                <td></td>
                 <th>Nick</th>
                 <th>Lines</th>
                 <th>When?</th>
@@ -27,27 +40,28 @@ def widths(*data):
             </tr>
         </thead>
         <tbody>
-            <tr py:for="rn, row in enumerate(sorteddata[:30])" style="vetical-align: top">
+            <tr py:for="rn, row in enumerate(sorteddata[:30])">
                 <th>${rn+1}</th>
                 <td>${row.nick}</td>
                 <td>${row.lines}</td>
-                <td py:with="w=widths(row.blue, row.green, row.yellow, row.red)">
-                    <div style="display: inline-block; height: 15px; width: ${w[0]*100}px; background: url('blue-h.png');" title="${row.blue}">
-                    </div><div style="display: inline-block; height: 15px; width: ${w[1]*100}px; background: url('green-h.png');" title="${row.green}">
-                    </div><div style="display: inline-block; height: 15px; width: ${w[2]*100}px; background: url('yellow-h.png');" title="${row.yellow}">
-                    </div><div style="display: inline-block; height: 15px; width: ${w[3]*100}px; background: url('red-h.png');" title="${row.red}">
+                <td class="hbars" py:with="w=widths(row.blue, row.green, row.yellow, row.red)">
+                    <div style="width: ${w[0]*100}px; background: url('blue-h.png');" title="${row.blue}">
+                    </div><div style="width: ${w[1]*100}px; background: url('green-h.png');" title="${row.green}">
+                    </div><div style="width: ${w[2]*100}px; background: url('yellow-h.png');" title="${row.yellow}">
+                    </div><div style="width: ${w[3]*100}px; background: url('red-h.png');" title="${row.red}">
                     </div>
                 </td><!--FIXME-->
                 <td>${row.words}</td>
                 <td>${round(row.words / float(row.lines), 1)}</td>
                 <td>${row.chars}</td>
                 <td>${round(row.chars / float(row.lines), 1)}</td>
-                <td>${"%i-%02i-%02i %i:%02i" % tuple(row.oldest)}</td>
-                <td>${"%i-%02i-%02i %i:%02i" % tuple(row.newest)}</td>
+                <td>${"%i-%02i-%02i" % tuple(row.oldest[:3])}</td>
+                <td>${"%i-%02i-%02i" % tuple(row.newest[:3])}</td>
                 <td style="max-width:30em; text-align:left;">${row.random}</td>
             </tr>
         </tbody>
     </table>
+    <p>These people aren't quite so vocal:</p>
     <div py:if="len(sorteddata) > 30">
         <div py:for="row in sorteddata[30:60]" style="display: inline-block; margin: 0.2em; padding: 0.2em; background: silver;">${row.nick} (${row.lines})</div>
     </div>

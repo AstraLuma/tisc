@@ -25,7 +25,7 @@ def r(keys, values, rereduce):
 		data['chars'] += value['chars']
 		if value['oldest'] < data['oldest']:
 			data['oldest'] = value['oldest']
-		if value['newest'] < data['newest']:
+		if value['newest'] > data['newest']:
 			data['newest'] = value['newest']
 	return data
 
