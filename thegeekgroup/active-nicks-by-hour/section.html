@@ -1,0 +1,56 @@
+<?python
+from __future__ import division
+
+datadicts = [{}, {}, {}, {}]
+for row in data:
+    block, nick = row.key
+    datadicts[block][nick] = row.value
+maxes = [ max(dd.values()) for dd in datadicts ]
+tabledata = [
+    [(block, nick, lines, lines/maxes[block]) for nick, lines in sorted(
+        ((nick, lines) for nick,lines in datadicts[block].items()),
+        key=lambda v: -v[1]
+        )
+    ][:10]
+    for block in range(4)]
+
+tabledata = zip(*tabledata)
+?>
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:py="http://genshi.edgewall.org/"
+     lang="en" class="section" id="active-hours">
+    <style scoped="">
+    #active-hours td {
+        vertical-align: bottom;
+    }
+    #active-hours .bar {
+        margin: 0 auto; 
+        height: 15px;
+        display: inline-block;
+    }
+    #active-hours .bar.blue   {   background: url('blue-h.png');  }
+    #active-hours .bar.green  {   background: url('green-h.png');  }
+    #active-hours .bar.yellow {   background: url('yellow-h.png');  }
+    #active-hours .bar.red    {   background: url('red-h.png');  }
+    </style>
+    <table class="asmall" style="text-align: center; font-size: 10px;">
+        <thead>
+            <tr>
+                <td></td>
+                <th>0-5</th>
+                <th>6-11</th>
+                <th>12-17</th>
+                <th>18-23</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr py:for="rank, row in enumerate(tabledata)">
+                <th>${rank+1}</th>
+                <td py:for="block, cell in enumerate(row)">
+                    <div class="bar ${['blue','green','yellow','red'][cell[0]]}" style="width: ${cell[3]*100}px;"></div>
+                    ${cell[1]} - ${cell[2]}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
