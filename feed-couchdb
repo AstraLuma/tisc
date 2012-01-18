@@ -47,3 +47,6 @@ class NOTICE(Line):
 	event = "NOTICE"
 	text = ""
 
+class NICK(Line):
+	event = "NICK"
+	newnick = ""
